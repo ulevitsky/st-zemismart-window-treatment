@@ -29,3 +29,8 @@ zigbeeManufacturer:
     manufacturer: _TZE200_9p5xmj5r
     model: TS0601
     deviceProfileName: zemismart-window-treatment
+  - id: _TZE200_cirjrpxe/TS0301
+    deviceLabel: Zemismart ZM15B
+    manufacturer: _TZE200_cirjrpxe
+    model: TS0301
+    deviceProfileName: zm15b-blind

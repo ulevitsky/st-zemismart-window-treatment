@@ -1,6 +1,5 @@
-name: "Zemismart Window Treatment"
-packageKey: "zemismart-window-treatment"
-description: "Configuration for Zemismart ZigBee window treatment devices"
+name: "Zemismart Blinds Lab (ulevitsky)"
+packageKey: "ulevitsky-zemismart-blinds"
+description: "Zemismart blinds with isolated ZM15B control and opt-in limit testing"
 permissions:
   zigbee: {}
-

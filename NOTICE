@@ -1,0 +1,11 @@
+Zemismart Blinds Lab (ulevitsky)
+
+Based on st-zemismart-window-treatment by Simeon Huang (librehat), Copyright 2024.
+Tuya framing and Basic initialization adapted from ST-Edge-Driver by Jaewon Park
+(iquix), Copyright 2021-2026. Both upstream implementations use Apache-2.0.
+Original librehat copyright and license notice remains in src/legacy.lua.
+
+Device protocol facts were researched from zigbee-herdsman-converters,
+zha-device-handlers, and zemismart-dev/zigbee2mqtt. The latter's zm25z.js has no
+repository license at the inspected revision; its source code is not copied.
+See docs/RESEARCH.md for pinned evidence and the independently implemented DP map.

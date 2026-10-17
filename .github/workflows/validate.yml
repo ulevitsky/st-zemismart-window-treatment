@@ -1,0 +1,38 @@
+name: Validate and package
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install Lua and official SDK
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y lua5.3
+          curl -fsSL https://github.com/SmartThingsCommunity/SmartThingsEdgeDrivers/releases/download/apiv21_62/lua_libs-api_v21_62X.tar.gz -o /tmp/edge-sdk.tar.gz
+          echo '6956bb74f8a2e08f6fc513d9239717885f0f9fb03beee8339be8e5b1bcaa2b0d  /tmp/edge-sdk.tar.gz' | sha256sum -c -
+          mkdir -p /tmp/edge-sdk
+          tar -xzf /tmp/edge-sdk.tar.gz -C /tmp/edge-sdk
+      - name: SDK checks
+        env:
+          EDGE_LUA_LIBS: /tmp/edge-sdk/lua_libs-api_v21
+          LUA: lua5.3
+        run: ./scripts/test.sh
+      - name: Build Edge package
+        run: |
+          npm install -g @smartthings/cli@2.1.2
+          mkdir -p dist
+          smartthings edge:drivers:package . --build-only dist/ulevitsky-zemismart-blinds.zip
+          cd dist
+          sha256sum ulevitsky-zemismart-blinds.zip > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ulevitsky-zemismart-blinds
+          path: dist/*

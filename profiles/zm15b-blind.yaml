@@ -1,0 +1,89 @@
+name: zm15b-blind
+components:
+  - id: main
+    capabilities:
+      - id: windowShade
+        version: 1
+      - id: windowShadeLevel
+        version: 1
+      - id: windowShadePreset
+        version: 1
+      - id: battery
+        version: 1
+      - id: refresh
+        version: 1
+    categories:
+      - name: Blind
+preferences:
+  - name: controlProtocol
+    title: Control protocol
+    description: Tuya matches iquix. Change only while stopped, then test a short jog.
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        tuya: Tuya EF00 (iquix)
+        standard: Zigbee 0102
+      default: tuya
+  - name: reverseApp
+    title: Reverse app direction
+    description: Software reversal of Open/Close and position. Does not reprogram motor direction.
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+  - name: fixPercent
+    title: Invert percentage
+    description: Flip reported and commanded percentage if 0 and 100 are reversed.
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+  - preferenceId: presetPosition
+    explicit: true
+  - name: jogSeconds
+    title: Timed jog seconds
+    description: Open/Close followed by Stop. Use 1 second for initial tests; 0 disables. Percentage control disabled during jog mode.
+    required: true
+    preferenceType: integer
+    definition:
+      minimum: 0
+      maximum: 2
+      default: 0
+  - name: enableCalibration
+    title: Enable limit calibration
+    description: DP118 matches the fingerprint in the Zemismart converter (named ZM25Z). Enable for supervised hardware validation.
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+  - name: limitAction
+    title: Physical limit action
+    description: Stop first. Select Idle and save before each action. Writes DP118 once; verify DP119 and physical result.
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        idle: Idle (no command)
+        setUpper: Set upper limit here
+        setLower: Set lower limit here
+        deleteUpper: Delete upper limit
+        deleteLower: Delete lower limit
+      default: idle
+  - name: requestResponses
+    title: Request Zigbee responses
+    description: Diagnostic option. Enable to request default responses to Tuya commands; success is not proof of physical calibration.
+    required: true
+    preferenceType: boolean
+    definition:
+      default: false
+  - name: positionReports
+    title: Position report datapoint
+    description: DP3 matches iquix. Choose DP2 only if logs and observed travel confirm DP2 carries actual position.
+    required: true
+    preferenceType: enumeration
+    definition:
+      options:
+        dp3: DP3 (iquix default)
+        dp2: DP2 (variant)
+      default: dp3
