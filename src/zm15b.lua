@@ -99,18 +99,19 @@ local function report(driver, device, rx)
   for _, r in ipairs(records) do
     log.info(string.format("RX dp=0x%02X type=0x%02X raw=%s value=%s", r.dp, r.kind, protocol.hex(r.data), tostring(r.value)))
     local v = r.value
-    -- Log other protocol reports, but never let them overwrite the selected backend.
-    if not standard(device) and v ~= nil then
-      if r.dp == 1 and r.kind == 4 and v <= 2 then
+    -- Position/control reports must not overwrite the other selected backend.
+    -- Calibration results remain useful with either movement backend.
+    if v ~= nil then
+      if not standard(device) and r.dp == 1 and r.kind == 4 and v <= 2 then
         if v == 1 then device:emit_event(caps.windowShade.windowShade.paused())
         else
           local open = (v == 0) ~= (device.preferences.reverseApp == true)
           moving(device, open and 100 or 0)
         end
-      elseif r.dp == 2 and r.kind == 2 and #r.data == 4 and v <= 100 then
+      elseif not standard(device) and r.dp == 2 and r.kind == 2 and #r.data == 4 and v <= 100 then
         if device.preferences.positionReports == "dp2" then arrived(device, convert(device, v))
         else moving(device, convert(device, v)) end -- iquix: destination echo, not an arrival.
-      elseif r.dp == 3 and r.kind == 2 and #r.data == 4 and v <= 100 then
+      elseif not standard(device) and r.dp == 3 and r.kind == 2 and #r.data == 4 and v <= 100 then
         arrived(device, convert(device, v))
       elseif r.dp == 13 and v <= 100 then
         device:emit_event(caps.battery.battery(v))

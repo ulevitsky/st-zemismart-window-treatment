@@ -151,4 +151,13 @@ check(sent[1].body.zcl_header.frame_ctrl:is_disable_default_response_set(),'iqui
 flags.preferences.requestResponses=true
 command(flags,'windowShade','pause')
 check(not sent[2].body.zcl_header.frame_ctrl:is_disable_default_response_set(),'diagnostic default response option')
+local mixed=device({controlProtocol='standard'})
+rx(mixed,P.encode(1,119,4,'\x02'))
+check(fields.limit_result==2,'Tuya calibration result parsed with standard movement backend')
+for _,manufacturer in ipairs({'_TZE200_68nvbio9','_TZE200_pw7mji0l','_TZE200_cf1sl3tj','_TZE200_nw1r9hp6','_TZE200_eevqq1uv','_TZE200_9p5xmj5r'}) do
+ local original=device({reverse=true})
+ function original:get_manufacturer() return manufacturer end
+ legacy.zigbee_handlers.cluster[0xEF00][2]({},original,{body={zcl_body={body_bytes=P.encode(1,3,2,string.pack('>I4',25))}}})
+ check(events[1].value.value==(manufacturer=='_TZE200_9p5xmj5r' and 75 or 25),'preserved legacy position quirk '..manufacturer)
+end
 print('Passed '..count..' SDK-backed checks')
