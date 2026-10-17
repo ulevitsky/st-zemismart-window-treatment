@@ -71,3 +71,7 @@ smartthings edge:drivers:logcat NEW_DRIVER_ID --hub-address YOUR_HUB_LAN_IP --lo
 Capture the exact time/action, motor label, manufacturer/model, firmware, endpoint/cluster description, and settings. Logs include outgoing DP/type/raw bytes, per-device transaction ID, incoming frames/DPs, malformed records, unknown commands and global/default responses. For investigating rejected Tuya commands, enable **Request Zigbee responses**, repeat one supervised action, then turn it off to return to iquix's frame flags.
 
 ZCL SUCCESS means command acceptance at that layer. It does not prove a limit was saved. DP119 success is a device result report; verify physical behavior too. EF00 command echoes without DP119 do not establish calibration success. A missing response is ambiguous, not proof that the command is unsupported.
+
+## Updating to v0.1.1-test1
+
+Download the new ZIP from the [release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.1-test1), then upload it to the same channel with `smartthings edge:drivers:package --upload ulevitsky-zemismart-blinds.zip --channel YOUR_CHANNEL_ID --install`. Keep the same channel/package key; this updates the driver already in use. No re-pairing or change-driver operation is needed. Reopen Settings and save **Endpoint action = Idle** before any new calibration action. Open/closed endpoint actions now follow **Reverse app direction**. Existing saved limits remain intact.

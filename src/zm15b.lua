@@ -161,7 +161,13 @@ local function init(driver, device)
 end
 -- Exact-fingerprint protocol facts from zemismart-dev/zigbee2mqtt zm25z.js.
 -- DP118 enum: delete upper/lower=0/1, set upper/lower=3/4.
-local limits = {setUpper = 3, setLower = 4, deleteUpper = 0, deleteLower = 1}
+-- App-relative endpoints follow the same reversal as Open/Close commands.
+local limits = {
+  setOpen = {normal = 3, reversed = 4},
+  setClosed = {normal = 4, reversed = 3},
+  deleteOpen = {normal = 0, reversed = 1},
+  deleteClosed = {normal = 1, reversed = 0}
+}
 local function info_changed(driver, device, event, args)
   local old = (args and args.old_st_store and args.old_st_store.preferences) or {}
   if old.controlProtocol and old.controlProtocol ~= device.preferences.controlProtocol then
@@ -172,20 +178,21 @@ local function info_changed(driver, device, event, args)
     device:emit_event(caps.windowShade.windowShade.unknown())
     configure(driver, device)
   end
-  local selected = device.preferences.limitAction
+  local selected = device.preferences.endpointAction
   -- Defaults arriving on driver switch/init are not an instruction to calibrate.
-  if not selected or selected == "idle" or selected == old.limitAction then return end
-  if old.limitAction == nil then log.warn("Select Idle then the limit action to execute"); return end
+  if not selected or selected == "idle" or selected == old.endpointAction then return end
+  if old.endpointAction == nil then log.warn("Select Idle then the limit action to execute"); return end
   if device.preferences.enableCalibration ~= true then log.warn("Calibration blocked: enable limit calibration explicitly"); return end
   if old.controlProtocol ~= device.preferences.controlProtocol or old.reverseApp ~= device.preferences.reverseApp then
     log.warn("Change protocol/direction separately from calibration"); return
   end
-  local value = limits[selected]
-  if value == nil then return end
+  local mapping = limits[selected]
+  if mapping == nil then return end
+  local value = device.preferences.reverseApp == true and mapping.reversed or mapping.normal
   if device:get_field("jog_timer") then log.warn("Stop the motor before setting a limit"); return end
   if device:get_field("limit_pending") then log.warn("Wait for the previous calibration result/timeout"); return end
   -- Never retry a limit write, never clear both limits, never claim it succeeded.
-  log.warn("DP118 limit write: " .. selected .. "; verify DP119 result and physical behavior")
+  log.warn(string.format("DP118 endpoint action=%s reverseApp=%s enum=%d; verify DP119 and physical behavior", selected, tostring(device.preferences.reverseApp == true), value))
   device:set_field("limit_pending", selected)
   device:set_field("limit_timeout", device.thread:call_with_delay(15, function()
     log.warn("No DP119 result observed for " .. tostring(device:get_field("limit_pending")) .. "; do not assume success")

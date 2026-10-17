@@ -27,7 +27,7 @@ preferences:
       default: tuya
   - name: reverseApp
     title: Reverse app direction
-    description: Software reversal of Open/Close and position. Does not reprogram motor direction.
+    description: Reverses Open/Close, position and endpoint actions. Does not change saved limits or reprogram motor direction.
     required: true
     preferenceType: boolean
     definition:
@@ -57,18 +57,18 @@ preferences:
     preferenceType: boolean
     definition:
       default: false
-  - name: limitAction
-    title: Physical limit action
-    description: Stop first. Select Idle and save before each action. Writes DP118 once; verify DP119 and physical result.
+  - name: endpointAction
+    title: Endpoint action
+    description: Endpoints follow the app Open/Close direction, including reversal. Stop first. Select Idle and save before each action.
     required: true
     preferenceType: enumeration
     definition:
       options:
         idle: Idle (no command)
-        setUpper: Set upper limit here
-        setLower: Set lower limit here
-        deleteUpper: Delete upper limit
-        deleteLower: Delete lower limit
+        setOpen: Set open endpoint here
+        setClosed: Set closed endpoint here
+        deleteOpen: Delete open endpoint
+        deleteClosed: Delete closed endpoint
       default: idle
   - name: requestResponses
     title: Request Zigbee responses

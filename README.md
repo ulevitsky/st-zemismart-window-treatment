@@ -1,6 +1,6 @@
 # Zemismart Blinds Lab (ulevitsky)
 
-Independent SmartThings Edge driver fork for **ZM15B / TS0301 / `_TZE200_cirjrpxe`**, retaining librehat's six TS0601 fingerprints. Includes open, close, pause/stop, percentage/preset positioning, supervised upper/lower limit actions, and Zigbee diagnostics.
+Independent SmartThings Edge driver fork for **ZM15B / TS0301 / `_TZE200_cirjrpxe`**, retaining librehat's six TS0601 fingerprints. Includes open, close, pause/stop, percentage/preset positioning, supervised open/closed endpoint actions, and Zigbee diagnostics.
 
 **Status: software-tested preview; physical acceptance on the user's ZM15B is pending.** There is no published SmartThings channel ID yet: account login is required to create it. The GitHub prerelease provides a CLI-built package.
 
@@ -8,7 +8,7 @@ The key research finding is that the [exact-fingerprint Zemismart converter](htt
 
 ## Install and switch
 
-1. Download `ulevitsky-zemismart-blinds.zip` from the [preview release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.0-test1).
+1. Download `ulevitsky-zemismart-blinds.zip` from the [preview release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.1-test1).
 2. Install the CLI: `npm install -g @smartthings/cli@2.1.2`.
 3. Run `smartthings edge:channels:create` and complete account login. Name your developer channel, then record its ID. Enroll your hub with `smartthings edge:channels:enroll --channel YOUR_CHANNEL_ID` (select the hub when prompted).
 4. Run `smartthings edge:drivers:package --upload ulevitsky-zemismart-blinds.zip --channel YOUR_CHANNEL_ID --install`. Select your hub.
@@ -21,6 +21,7 @@ See [installation and developer-channel commands](docs/INSTALL.md) and [safe inc
 
 - Exact-fingerprint ZM15B handler: iquix-compatible EF00 DP1/2/3 control, Basic bind/initialization, default-response suppression; no automatic movement on join, switch, or restart.
 - Explicit standard Zigbee `0x0102` backend for comparison, using official SDK commands and percentage conversion. No automatic protocol switching or duplicate movement commands.
+- Open/closed endpoint labels follow **Reverse app direction**, so calibration matches the app controls. Changing reversal does not rewrite saved limits.
 - DP118 limit actions default to disabled, execute only on deliberate preference changes, and are never retried automatically. DP107 status and DP119 result reports are decoded in logs.
 - Per-device transaction numbers, bounded multi-DP parsing, datatype checks, raw unknown-message logs, and an optional 1–2 second jog with a queued Stop.
 - Original TS0601 profile, quirks, and calibration remain isolated in `src/legacy.lua`; initialization defaults cannot accidentally clear a limit.

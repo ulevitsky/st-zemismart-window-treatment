@@ -14,7 +14,7 @@ local function check(value, message)
 end
 local function device(prefs)
   sent, events, timers, fields, latest = {}, {}, {}, {}, nil
-  local d = {zigbee_eui='01234567', fingerprinted_endpoint_id=1, preferences = prefs or {controlProtocol='tuya', limitAction='idle', reverseApp=false},
+  local d = {zigbee_eui='01234567', fingerprinted_endpoint_id=1, preferences = prefs or {controlProtocol='tuya', endpointAction='idle', reverseApp=false},
     thread = {call_with_delay=function(_, seconds, fn) timers[#timers+1]=fn; return #timers end,
       cancel_timer=function(_, id) timers[id]=false end}}
   function d:try_update_metadata(m) self.metadata=m end
@@ -79,27 +79,27 @@ events={}; rx(d, '\0\1\3\2\0\4\0')
 check(#events==0, 'malformed RX does not crash or emit')
 rx(d,P.encode(1,2,2,string.pack('>I4',44)))
 check(#events==0, 'destination echo must not invent arrival')
-local old={controlProtocol='tuya',limitAction='idle',reverseApp=false}
+local old={controlProtocol='tuya',endpointAction='idle',reverseApp=false}
 for _,m in ipairs(sent) do check(m.address_header.cluster.value~=0xEF00 or dp(m).dp~=16, 'target never sends DP16') end
-d.preferences.limitAction='setUpper'; update(d,old)
+d.preferences.endpointAction='setOpen'; update(d,old)
 check(#sent==before, 'calibration disabled by default')
 d.preferences.enableCalibration=true
 update(d,{})
 check(#sent==before, 'no initial preference calibration')
 update(d,old)
 check(dp(sent[#sent]).dp==118 and dp(sent[#sent]).kind==4 and dp(sent[#sent]).value==3, 'upper limit explicit write')
-before=#sent; update(d,{limitAction='setUpper'})
+before=#sent; update(d,{endpointAction='setOpen'})
 check(#sent==before, 'no replay of selected action')
-for action,value in pairs({setLower=4,deleteUpper=0,deleteLower=1}) do
+for action,value in pairs({setClosed=4,deleteOpen=0,deleteClosed=1}) do
  rx(d,P.encode(1,119,4,'\x02'))
- d.preferences.limitAction=action; update(d,old)
+ d.preferences.endpointAction=action; update(d,old)
  check(dp(sent[#sent]).value==value, action)
 end
-before=#sent; d.preferences.limitAction='setUpper'; d.preferences.controlProtocol='standard'
+before=#sent; d.preferences.endpointAction='setOpen'; d.preferences.controlProtocol='standard'
 -- Mixed protocol/calibration change must not write limits.
 update(d,old)
 for i=before+1,#sent do check(sent[i].address_header.cluster.value~=0xEF00 or dp(sent[i]).dp~=118, 'no calibration with protocol change') end
-local d2=device({controlProtocol='standard',limitAction='idle',reverseApp=false})
+local d2=device({controlProtocol='standard',endpointAction='idle',reverseApp=false})
 command(d2,'windowShade','open'); check(sent[1].body.zcl_header.cmd.value==0 and sent[1].address_header.cluster.value==0x102)
 command(d2,'windowShade','close'); check(sent[2].body.zcl_header.cmd.value==1)
 command(d2,'windowShade','pause'); check(sent[3].body.zcl_header.cmd.value==2)
@@ -128,12 +128,12 @@ check(dp(sent[1]).dp==16 and dp(sent[1]).value==0,'legacy calibration preserved'
 local migrated=device()
 Z.lifecycle_handlers.driverSwitched(driver,migrated)
 check(migrated.metadata.profile=='zm15b-blind' and #sent==2 and sent[1].address_header.cluster.value==0x21 and sent[2].address_header.cluster.value==0, 'migration changes profile, binds and reads Basic')
-local timeout_device=device({controlProtocol='tuya',limitAction='setUpper',enableCalibration=true,reverseApp=false})
-update(timeout_device,{controlProtocol='tuya',limitAction='idle',reverseApp=false})
-check(fields.limit_pending=='setUpper')
+local timeout_device=device({controlProtocol='tuya',endpointAction='setOpen',enableCalibration=true,reverseApp=false})
+update(timeout_device,{controlProtocol='tuya',endpointAction='idle',reverseApp=false})
+check(fields.limit_pending=='setOpen')
 local before_timeout=#sent
-timeout_device.preferences.limitAction='setLower'
-update(timeout_device,{controlProtocol='tuya',limitAction='idle',reverseApp=false})
+timeout_device.preferences.endpointAction='setClosed'
+update(timeout_device,{controlProtocol='tuya',endpointAction='idle',reverseApp=false})
 check(#sent==before_timeout,'pending limit blocks another write')
 timers[#timers]()
 check(fields.limit_pending==nil and #sent==before_timeout,'timeout clears pending without retry')
@@ -160,4 +160,24 @@ for _,manufacturer in ipairs({'_TZE200_68nvbio9','_TZE200_pw7mji0l','_TZE200_cf1
  legacy.zigbee_handlers.cluster[0xEF00][2]({},original,{body={zcl_body={body_bytes=P.encode(1,3,2,string.pack('>I4',25))}}})
  check(events[1].value.value==(manufacturer=='_TZE200_9p5xmj5r' and 75 or 25),'preserved legacy position quirk '..manufacturer)
 end
+-- Every endpoint action follows app direction, independently of percentage fixes.
+for _, reversed in ipairs({false,true}) do
+ for _, spec in ipairs({{'setOpen',3,4},{'setClosed',4,3},{'deleteOpen',0,1},{'deleteClosed',1,0}}) do
+  local endpoint=device({controlProtocol='tuya',endpointAction=spec[1],enableCalibration=true,reverseApp=reversed,fixPercent=true})
+  update(endpoint,{controlProtocol='tuya',endpointAction='idle',reverseApp=reversed})
+  check(#sent==1 and dp(sent[1]).dp==118 and dp(sent[1]).kind==4 and dp(sent[1]).value==spec[reversed and 3 or 2], 'endpoint mapping '..spec[1]..' reversed='..tostring(reversed))
+ end
+end
+local upgrade=device({controlProtocol='tuya',endpointAction='idle',limitAction='setUpper',enableCalibration=true,reverseApp=true})
+update(upgrade,{controlProtocol='tuya',limitAction='setUpper',enableCalibration=true,reverseApp=true})
+check(#sent==0, 'upgrade must not reinterpret or replay old physical action')
+upgrade.preferences.endpointAction='setOpen'
+update(upgrade,{controlProtocol='tuya',limitAction='setUpper',enableCalibration=true,reverseApp=true})
+check(#sent==0, 'new action must be initialized through Idle before calibration')
+upgrade.preferences.endpointAction='idle'
+update(upgrade,{controlProtocol='tuya',endpointAction='setOpen',reverseApp=false})
+check(#sent==0, 'reversal or Idle never rewrites existing limits')
+upgrade.preferences.endpointAction='setOpen'
+update(upgrade,{controlProtocol='tuya',endpointAction='idle',reverseApp=false})
+check(#sent==0, 'combined reversal and calibration blocked')
 print('Passed '..count..' SDK-backed checks')
