@@ -10,7 +10,7 @@ The key research finding is that the [exact-fingerprint Zemismart converter](htt
 
 1. Download `ulevitsky-zemismart-blinds.zip` from the [preview release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.0-test1).
 2. Install the CLI: `npm install -g @smartthings/cli@2.1.2`.
-3. Run `smartthings edge:channels:create` and complete account login. Name your developer channel, then record its ID.
+3. Run `smartthings edge:channels:create` and complete account login. Name your developer channel, then record its ID. Enroll your hub with `smartthings edge:channels:enroll --channel YOUR_CHANNEL_ID` (select the hub when prompted).
 4. Run `smartthings edge:drivers:package --upload ulevitsky-zemismart-blinds.zip --channel YOUR_CHANNEL_ID --install`. Select your hub.
 5. With the motor stopped, select **Driver → Change driver → Zemismart Blinds Lab (ulevitsky)** in the SmartThings app; or run `smartthings edge:drivers:switch`. Keep the working iquix driver installed for rollback.
 6. The switch handler updates the profile. Reopen the device screen to load its settings. No re-pairing or factory reset is required.

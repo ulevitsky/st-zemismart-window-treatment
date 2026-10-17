@@ -12,7 +12,13 @@ smartthings edge:channels:create
 smartthings edge:channels --json
 ```
 
-Record the returned channel UUID. Upload the release ZIP, assign it, and select the hub when prompted:
+Record the returned channel UUID and enroll the hub (select it when prompted):
+
+```sh
+smartthings edge:channels:enroll --channel YOUR_CHANNEL_ID
+```
+
+Upload the release ZIP, assign it, and select that hub when prompted:
 
 ```sh
 smartthings edge:drivers:package --upload ulevitsky-zemismart-blinds.zip --channel YOUR_CHANNEL_ID --install
