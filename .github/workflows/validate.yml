@@ -29,10 +29,10 @@ jobs:
         run: |
           npm install -g @smartthings/cli@2.1.2
           mkdir -p dist
-          smartthings edge:drivers:package . --build-only dist/ulevitsky-zemismart-blinds.zip
+          smartthings edge:drivers:package . --build-only dist/zigbee-blind-control.zip
           cd dist
-          sha256sum ulevitsky-zemismart-blinds.zip > SHA256SUMS
+          sha256sum zigbee-blind-control.zip > SHA256SUMS
       - uses: actions/upload-artifact@v4
         with:
-          name: ulevitsky-zemismart-blinds
+          name: zigbee-blind-control
           path: dist/*

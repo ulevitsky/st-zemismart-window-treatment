@@ -12,4 +12,4 @@ template.zigbee_handlers.global = {
   [0x0102] = {[0x0B] = diagnostic, [0x01] = diagnostic, [0x04] = diagnostic, [0x07] = diagnostic}
 }
 template.zigbee_handlers.fallback = diagnostic
-Driver("ulevitsky-zemismart-blinds", template):run()
+Driver("zigbee-blind-control", template):run()

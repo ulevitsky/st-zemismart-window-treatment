@@ -12,7 +12,7 @@ local protocol = require "protocol"
 local tuya = require "tuya"
 local log = require "log"
 local WC, Basic = clusters.WindowCovering, clusters.Basic
-local M = {NAME = "Zemismart ZM15B TS0301"}
+local M = {NAME = "TS0301 blind endpoint handler"}
 function M.can_handle(opts, driver, device)
   return device:get_manufacturer() == "_TZE200_cirjrpxe" and device:get_model() == "TS0301"
 end

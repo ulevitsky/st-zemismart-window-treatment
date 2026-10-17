@@ -1,6 +1,6 @@
-# Zemismart Blinds Lab (ulevitsky)
+# Zigbee Blind Control
 
-Independent SmartThings Edge driver fork for **ZM15B / TS0301 / `_TZE200_cirjrpxe`**, retaining librehat's six TS0601 fingerprints. Includes open, close, pause/stop, percentage/preset positioning, supervised open/closed endpoint actions, and Zigbee diagnostics.
+Independent community SmartThings Edge driver, with no manufacturer affiliation. Includes support for **ZM15B / TS0301 / `_TZE200_cirjrpxe`**, retaining librehat's six TS0601 fingerprints. Includes open, close, pause/stop, percentage/preset positioning, supervised open/closed endpoint actions, and Zigbee diagnostics.
 
 **Status: community preview, reported working on a ZM15B.** Published through **UL’s edge drivers**; firmware variants and retained legacy devices need further hardware testing.
 
@@ -12,13 +12,13 @@ The key research finding is that the [exact-fingerprint Zemismart converter](htt
 
 1. Open the invitation link and sign in with your Samsung account.
 2. Accept the invitation, choose your SmartThings hub and select **Enroll**.
-3. Open **Available Drivers** and install **Zemismart Blinds Lab (ulevitsky)**.
-4. With the motor stopped, open its device page in the SmartThings app and choose **Driver → Change driver → Zemismart Blinds Lab (ulevitsky)**. Keep the working driver installed for rollback. No re-pairing or factory reset is required.
+3. Open **Available Drivers** and install **Zigbee Blind Control**.
+4. With the motor stopped, open its device page in the SmartThings app and choose **Driver → Change driver → Zigbee Blind Control**. Keep the working driver installed for rollback. No re-pairing or factory reset is required.
 5. Reopen Settings and save **Endpoint action = Idle** before any calibration action. Read the [safe incremental calibration guide](docs/CALIBRATION.md).
 
 The channel is **UL’s edge drivers** (`4c5629b7-c3df-4e79-b0b1-b088b2ccc91c`). The driver ID is `fec52ec7-75d7-4d0d-8eb0-1ca2f491b7d3`.
 
-For CLI installation, source builds, updates or creating your own channel, see [installation and developer-channel commands](docs/INSTALL.md). Packaged ZIPs remain available from the [preview release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.1-test1).
+For CLI installation, source builds, updates or creating your own channel, see [installation and developer-channel commands](docs/INSTALL.md). Packaged ZIPs remain available from the [preview release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.2-test1).
 
 ## Design
 
@@ -37,7 +37,7 @@ Use Lua 5.3 or 5.4 and the official [Edge SDK apiv21_62](https://github.com/Smar
 
 ```sh
 EDGE_LUA_LIBS=/path/to/lua_libs-api_v21 LUA=lua5.4 ./scripts/test.sh
-smartthings edge:drivers:package . --build-only dist/ulevitsky-zemismart-blinds.zip
+smartthings edge:drivers:package . --build-only dist/zigbee-blind-control.zip
 ```
 
 Tests use official SDK message builders/serialization and hub mocks. They cover commands, reports, malformed frames, migration, jog behavior, calibration guards/timeouts, and legacy limit behavior. They do not simulate physical travel. CI runs the checks and builds a downloadable package.

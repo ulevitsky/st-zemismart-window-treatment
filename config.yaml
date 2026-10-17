@@ -1,5 +1,5 @@
-name: "Zemismart Blinds Lab (ulevitsky)"
+name: "Zigbee Blind Control"
 packageKey: "ulevitsky-zemismart-blinds"
-description: "Zemismart blinds with isolated ZM15B control and opt-in limit testing"
+description: "Independent community driver for compatible Zigbee blinds, positioning and endpoint calibration"
 permissions:
   zigbee: {}
