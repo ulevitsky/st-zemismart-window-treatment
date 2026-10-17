@@ -1,6 +1,15 @@
 # Installation and developer channel
 
-Requires a SmartThings account, a supported Edge hub, and the blind already paired to that hub. GitHub and SmartThings authentication are separate. Commands below were checked against CLI **2.1.2** help. CLI build-only works without SmartThings login; cloud upload/channel creation does require it.
+## Public installation (no CLI)
+
+Open **[UL’s edge drivers](https://bestow-regional.api.smartthings.com/invite/6Vjdn3bxx62N)**, sign in to your Samsung account, accept the invitation, enroll your hub, and install **Zemismart Blinds Lab (ulevitsky)** under Available Drivers. Then switch the existing blind to this driver in the app. No re-pairing is required. See [calibration instructions](CALIBRATION.md) before changing limits.
+
+Channel: `4c5629b7-c3df-4e79-b0b1-b088b2ccc91c`  
+Driver: `fec52ec7-75d7-4d0d-8eb0-1ca2f491b7d3`
+
+## CLI and maintaining your own deployment
+
+Requires a SmartThings account, a supported Edge hub, and the blind already paired to that hub. GitHub and SmartThings authentication are separate. Commands below were checked against CLI **2.1.2** help. CLI build-only works without SmartThings login; cloud upload/channel creation does require it. The public channel above is already deployed; the following instructions are for maintainers or anyone creating a separate channel.
 
 ## First deployment
 

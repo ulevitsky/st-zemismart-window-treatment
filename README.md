@@ -2,20 +2,23 @@
 
 Independent SmartThings Edge driver fork for **ZM15B / TS0301 / `_TZE200_cirjrpxe`**, retaining librehat's six TS0601 fingerprints. Includes open, close, pause/stop, percentage/preset positioning, supervised open/closed endpoint actions, and Zigbee diagnostics.
 
-**Status: software-tested preview; physical acceptance on the user's ZM15B is pending.** There is no published SmartThings channel ID yet: account login is required to create it. The GitHub prerelease provides a CLI-built package.
+**Status: community preview, reported working on a ZM15B.** Published through **UL’s edge drivers**; firmware variants and retained legacy devices need further hardware testing.
 
 The key research finding is that the [exact-fingerprint Zemismart converter](https://github.com/zemismart-dev/zigbee2mqtt/blob/4626587396e51f4bc617a504d698bd07bdbd5d25/zm25z.js) uses **DP118 (`0x76`)** for limits and **DP119 (`0x77`)** for results. It names that fingerprint ZM25Z, while this project targets the user's ZM15B. Confirm actual firmware behavior incrementally. **DP16 (`0x10`) is not sent for this fingerprint.** Existing TS0601 devices retain librehat's DP16 commands.
 
 ## Install and switch
 
-1. Download `ulevitsky-zemismart-blinds.zip` from the [preview release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.1-test1).
-2. Install the CLI: `npm install -g @smartthings/cli@2.1.2`.
-3. Run `smartthings edge:channels:create` and complete account login. Name your developer channel, then record its ID. Enroll your hub with `smartthings edge:channels:enroll --channel YOUR_CHANNEL_ID` (select the hub when prompted).
-4. Run `smartthings edge:drivers:package --upload ulevitsky-zemismart-blinds.zip --channel YOUR_CHANNEL_ID --install`. Select your hub.
-5. With the motor stopped, select **Driver → Change driver → Zemismart Blinds Lab (ulevitsky)** in the SmartThings app; or run `smartthings edge:drivers:switch`. Keep the working iquix driver installed for rollback.
-6. The switch handler updates the profile. Reopen the device screen to load its settings. No re-pairing or factory reset is required.
+**[Install from UL’s edge drivers](https://bestow-regional.api.smartthings.com/invite/6Vjdn3bxx62N)** — no CLI or ZIP required.
 
-See [installation and developer-channel commands](docs/INSTALL.md) and [safe incremental calibration](docs/CALIBRATION.md) before operating a motor with uncertain limits.
+1. Open the invitation link and sign in with your Samsung account.
+2. Accept the invitation, choose your SmartThings hub and select **Enroll**.
+3. Open **Available Drivers** and install **Zemismart Blinds Lab (ulevitsky)**.
+4. With the motor stopped, open its device page in the SmartThings app and choose **Driver → Change driver → Zemismart Blinds Lab (ulevitsky)**. Keep the working driver installed for rollback. No re-pairing or factory reset is required.
+5. Reopen Settings and save **Endpoint action = Idle** before any calibration action. Read the [safe incremental calibration guide](docs/CALIBRATION.md).
+
+The channel is **UL’s edge drivers** (`4c5629b7-c3df-4e79-b0b1-b088b2ccc91c`). The driver ID is `fec52ec7-75d7-4d0d-8eb0-1ca2f491b7d3`.
+
+For CLI installation, source builds, updates or creating your own channel, see [installation and developer-channel commands](docs/INSTALL.md). Packaged ZIPs remain available from the [preview release](https://github.com/ulevitsky/st-zemismart-window-treatment/releases/tag/v0.1.1-test1).
 
 ## Design
 
